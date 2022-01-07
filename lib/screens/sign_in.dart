@@ -14,6 +14,14 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,32 +71,48 @@ class _SignInScreenState extends State<SignInScreen> {
                         borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(8))),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: ElevatedButton(
-                    onPressed: () {},
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        Text("Hier registrieren"),
-                        Icon(Icons.keyboard_arrow_right)
-                      ],
-                    )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        AuthenticationService().signIn(
+                            email: emailController.text,
+                            password: passwordController.text);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: const [
+                          Text("Einloggen"),
+                          Icon(Icons.keyboard_arrow_right)
+                        ],
+                      )),
+                  ElevatedButton(
+                      onPressed: () {
+                        AuthenticationService().register(
+                            email: emailController.text,
+                            password: passwordController.text);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: const [
+                          Text("Hier registrieren"),
+                          Icon(Icons.keyboard_arrow_right)
+                        ],
+                      )),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
                     onPressed: () {
-                      AuthenticationService(FirebaseAuth.instance)
-                          .signInWithGoogle();
+                      AuthenticationService().signInWithGoogle();
                     },
                     icon: const FaIcon(FontAwesomeIcons.google),
                   ),
                   IconButton(
-                    onPressed: () {
-                      AuthenticationService(FirebaseAuth.instance).signOut();
-                    },
+                    onPressed: () {},
                     icon: const FaIcon(FontAwesomeIcons.facebook),
                   ),
                   IconButton(

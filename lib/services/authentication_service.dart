@@ -2,16 +2,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthenticationService {
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  AuthenticationService(this._firebaseAuth);
+  AuthenticationService();
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<User?> get authStateChanges =>
+      FirebaseAuth.instance.authStateChanges();
 
   Future<String> signIn(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      return e.toString();
+    }
+    return "Other error";
+  }
+
+  Future<String> register(
+      {required String email, required String password}) async {
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
     } on FirebaseAuthException catch (e) {
       return e.toString();
@@ -29,7 +41,7 @@ class AuthenticationService {
       idToken: googleAuth?.idToken,
     );
 
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await _firebaseAuth.signInWithCredential(credential);
   }
 
   Future<void> signOut() async {

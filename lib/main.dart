@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(
-          create: (_) => AuthenticationService(FirebaseAuth.instance),
+          create: (_) => AuthenticationService(),
         ),
         StreamProvider(
           create: (context) =>
@@ -47,6 +47,10 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<User?>();
+    if (user != null) {
+      return const DatabaseTextScreen();
+    }
     return const SignInScreen();
   }
 }
@@ -59,7 +63,14 @@ class DatabaseTextScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: const Text("Sign Out"),
+                onTap: () => AuthenticationService().signOut(),
+              )
+            ],
+          ),
         ],
         title: const Text("To-Do"),
       ),
